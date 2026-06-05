@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import chat, gcode, drawings, inspection, tools
+from app.api import chat, gcode, drawings, inspection, tools, records
 from app.core.config import settings
 
 app = FastAPI(
@@ -26,6 +26,8 @@ app.include_router(drawings.router, prefix="/api/drawings", tags=["图纸解析"
 app.include_router(inspection.router, prefix="/api/inspection", tags=["首件检验"])
 app.include_router(tools.router, prefix="/api/tools", tags=["刀具追踪"])
 
+
+app.include_router(records.router, prefix="/api/records", tags=["加工记录"])
 
 @app.get("/api/health")
 async def health_check():
