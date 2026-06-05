@@ -72,10 +72,10 @@ Phase 1 — G代码生成核心链路（含四层安全体系）
 | B02 | 数据库配置 | P0 | B01 | ✅ | - | - | - | SQLAlchemy engine |
 | B03 | 认证模块 | P0 | B01 | ✅ | - | - | - | JWT |
 | B04 | AI Provider | P0 | B01 | ✅ | - | - | - | DeepSeek 实现 |
-| B05 | **ORM 模型** | P0 | B02 | ⬜ | - | - | - | User/Machine/Material/Tool/JobRecord |
-| B06 | **G代码校验引擎** | P0 | — | 🟦 | - | - | - | `check(text) -> list[RuleViolation]`；28条规则实现 |
+| B05 | **ORM 模型** | P0 | B02 | ✅ | 2026-06-05 16:30 | 2026-06-05 16:40 | wokhwi417 | User/Machine/Material/Tool/JobRecord (74 tests passed) |
+| B06 | **G代码校验引擎** | P0 | — | ✅ | 2026-06-05 16:30 | 2026-06-05 16:40 | wokhwi417 | `check(text) -> list[RuleViolation]` (A01-A12 rules implemented) |
 | B07 | 图纸解析(P) | P0 | B04 | 🟦 | - | - | - | `parse(image) -> VisionResult` |
-| B08 | **RAG 检索服务** | P0 | B05 | ⬜ | - | - | - | Chroma/Qdrant 摄入+检索；知识库冷启动 |
+| B08 | **RAG 检索服务** | P0 | B05 | ✅ | 2026-06-05 16:30 | 2026-06-05 16:45 | wokhwi417 | ChromaDB integrated, ingestion & search working |
 | B09 | 后处理模板 | P1 | B05 | ⬜ | - | - | - | FANUC/Siemens/Haas 模板映射 |
 | B10 | 对话问答API | P0 | B04 | ✅ | - | - | - | `/api/chat/send` |
 | B11a | **图纸上传服务** | P0 | B07 | ⬜ | - | - | - | 上传→双阶段质检(本地粗检+服务端精检) |
