@@ -24,6 +24,92 @@
 
 ---
 
+## 会话经验
+
+**会话中发现重要教训时，主动追加到 `.claude/experience.md`**，包括：
+- 踩过的坑和解决方法
+- 某个模块的隐含约定或陷阱
+- 某个工具/API 的意外行为
+- 比预期更复杂或更简单的事情
+
+格式：`## YYYY-MM-DD` + 一句话标题 + 简短描述。
+
+**每次会话开始时，读取该文件最近 5 条记录**，避免重复犯错。
+
+## Skill 执行纠错
+
+执行 Skill 过程中遇到错误或不符合预期的结果时：
+
+1. **分析原因** — 是 Skill 指导有误，还是实际情况与 Skill 假设不符
+2. **提出方案** — 给出具体的优化建议
+3. **不确定就问** — 如果无法判断根因，向用户提问，一起讨论
+4. **共同优化** — 与用户确认后，当场修改 Skill 文件
+
+不要默默跳过错误继续执行，也不要自己擅自修改 Skill。
+
+---
+
+## AI 编码行为准则
+
+> 来源：[Andrej Karpathy 对 LLM 编码陷阱的观察](https://x.com/karpathy/status/2015883857489522876)
+
+### 1. 先思考再编码
+
+**不假设。不隐藏困惑。暴露权衡。**
+
+- 明确说出你的假设，不确定就问
+- 存在多种解读时列出选项，不要静默选择一种然后执行
+- 有更简单的方案就说出来，该反驳就反驳
+- 遇到不清楚的地方停下来，说出哪里不清楚，然后提问
+
+### 2. 简单优先
+
+**解决问题的最少代码，不做投机性设计。**
+
+- 不实现未要求的功能
+- 不为只用一次的代码创建抽象
+- 不添加未要求的"灵活性"或"可配置性"
+- 不为不可能的场景添加错误处理
+- 200 行能 50 行解决的，重写
+
+检验标准：高级工程师会不会觉得过度设计了？会就简化。
+
+### 3. 精准改动
+
+**只动必须动的。只清理自己造成的遗留。**
+
+编辑现有代码时：
+- 不"顺手改进"相邻代码、注释或格式
+- 不重构没有问题的代码
+- 匹配现有风格，即使你会写得不同
+- 发现无关的死代码，提一下但不删
+
+你的改动产生了孤立代码时：
+- 清理**你自己的改动**造成的未使用 import/变量/函数
+- 不清理事先存在的死代码（除非被要求）
+
+检验标准：每一行改动都能追溯到用户的请求。
+
+### 4. 目标驱动执行
+
+**定义成功标准。循环直到验证通过。**
+
+把指令式任务转化为可验证的目标：
+- "加个验证" → "为非法输入写测试，然后让测试通过"
+- "修这个 bug" → "写一个能复现它的测试，然后让测试通过"
+- "重构 X" → "确保重构前后测试都通过"
+
+多步任务要列出带验证点的计划：
+```
+1. [步骤] → 验证：[检查项]
+2. [步骤] → 验证：[检查项]
+3. [步骤] → 验证：[检查项]
+```
+
+强成功标准让 AI 能独立循环。弱标准（"让它能跑"）需要不断人工介入。
+
+---
+
 ## 快速开始
 
 ### 环境准备
@@ -64,108 +150,35 @@ docker compose up -d
 
 ## 目录结构
 
+详见 [`CODE_MAP.md`](CODE_MAP.md)（每个模块一行的快速参考）。
+
+顶层结构：
 ```
 jianyong-cnc-ai/
-├── frontend/                  # React + Vite + MUI
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── layout/        # 底部Tab导航 + 全局状态条
-│   │   │   ├── chat/          # 对话问答Tab
-│   │   │   ├── gcode/         # G代码Tab（4步流程）
-│   │   │   ├── profile/       # 我的Tab
-│   │   │   └── ui/            # 通用UI组件
-│   │   ├── hooks/             # 自定义 hooks
-│   │   ├── lib/               # API 调用、G代码客户端校验
-│   │   ├── stores/            # Zustand 状态管理
-│   │   └── styles/            # MUI ThemeProvider 配置
-│   └── vite.config.ts
-├── backend/                   # FastAPI + SQLAlchemy
-│   ├── app/
-│   │   ├── api/               # REST API 路由
-│   │   ├── core/              # 配置、数据库、安全
-│   │   ├── models/            # SQLAlchemy ORM 模型
-│   │   ├── schemas/           # Pydantic Schema
-│   │   └── services/          # 业务逻辑层
-│   │       ├── ai_provider.py       # AI Provider 抽象层
-│   │       ├── gcode_engine.py      # G代码安全校验引擎（28条规则）
-│   │       ├── drawing_parser.py    # 图纸解析 Provider
-│   │       ├── post_processor.py    # 后处理模板
-│   │       └── rag_service.py       # RAG 检索服务
-│   └── tests/
-├── docs/
-│   ├── PRD.md                 # 当前最新 PRD
-│   ├── PRD/                   # PRD 历史版本归档
-│   ├── architecture.md        # 架构决策记录
-│   ├── api-design.md          # API 接口设计
-│   └── progress.md            # 项目进度跟踪
-├── docker-compose.yml         # MySQL + 后端
-├── CLAUDE.md                  # 本文档
-└── README.md
+├── frontend/          # React + Vite + MUI（详见 frontend/CLAUDE.md）
+├── backend/           # FastAPI + SQLAlchemy（详见 backend/CLAUDE.md）
+├── docs/              # PRD、架构、API 设计、进度
+├── .claude/           # settings.json、skills/
+├── CODE_MAP.md        # 模块级代码地图
+└── CLAUDE.md          # 本文档
 ```
 
 ---
 
 ## 架构决策记录
 
-### ADR-1: MUI 而非 Tailwind（2026-06-05）
+完整 ADR 见 [`docs/architecture.md`](docs/architecture.md)。以下是关键决策摘要：
 
-**决策**：MVP 阶段使用 MUI (Material UI) 作为唯一 UI 框架，删除 Tailwind CSS。
-
-**理由**：
-- MUI 组件生态完整（Stepper、BottomNavigation、Chip、Dialog），匹配 PRD 丰富的交互组件需求
-- 快速原型速率高，小团队效率优先
-- 目标用户对 UI 精美度要求不高，干净可用即可
-- 避免 CSS Specificity 冲突和双轨维护成本
-
-**替代方案已评估**：Tailwind + Radix UI（更适合高度定制化 C 端体验，Phase 2 如需重构可考虑）
-
-### ADR-2: SQLite 开发 + MySQL 生产（2026-06-05）
-
-**决策**：开发期使用 SQLite，MySQL 部署生产。判断标准：单表超过 50 万行或并发写入超 100qps 时迁移。
-
-**理由**：SQLite 对单机 CNC 场景完全够用，避免开发期维护 MySQL 容器的额外复杂度。详见 PRD §7。
-
-### ADR-3: AI Provider 抽象层（2026-06-05）
-
-**决策**：所有 AI 调用通过 `AIProvider` 抽象接口，支持 DeepSeek + 本地 ollama/Qwen 切换。
-
-**理由**：避免单一供应商锁定，支持离线/内网降级路径。详见 PRD §7.3。
-
-### ADR-4: 安全校验引擎独立于 AI（2026-06-05）
-
-**决策**：G 代码安全校验引擎是独立的 Python 模块，不依赖 LLM，确定性执行。
-
-**理由**：AI 输出不可控（幻觉、遗漏），安全规则必须 100% 确定。校验引擎支持本地离线运行和 WASM 编译前端运行。
+| ADR | 决策 | 核心理由 |
+|-----|------|---------|
+| ADR-1 | MUI 而非 Tailwind | 组件生态完整，小团队效率优先 |
+| ADR-2 | SQLite 开发 + MySQL 生产 | 单机场景够用，避免开发期维护 MySQL |
+| ADR-3 | AI Provider 抽象层 | 避免供应商锁定，支持离线降级 |
+| ADR-4 | 安全校验引擎独立于 AI | 安全规则必须确定性执行 |
 
 ---
 
 ## 开发约定
-
-### 文件命名
-
-- React 组件：`PascalCase`（`ChatTab.tsx`、`GCodeTab.tsx`）
-- Hooks：`use` 前缀（`useReducedMotion.ts`）
-- Python 模块：`snake_case`（`gcode_engine.py`）
-- API 路由文件以功能域命名
-
-### API 响应格式
-
-所有 API 响应使用统一信封：
-
-```json
-{
-  "success": true,
-  "data": {},
-  "error": null,
-  "metadata": { "total": 100, "page": 1, "limit": 20 }
-}
-```
-
-### G 代码校验规则编号
-
-- `A-XX`：阻断级（12 条）— 必须回退重生成
-- `B-XX`：警告级（9 条）— 用户逐项确认
-- `C-XX`：提醒级（7 条）— 代码中标黄
 
 ### 提交消息格式
 
@@ -214,19 +227,15 @@ test: 补充安全校验引擎单元测试
 
 ## 常见问题
 
-### 如何添加新的 G 代码安全规则？
-
-1. 在 `backend/app/services/gcode_engine.py` 的 `_load_rules()` 中添加新的 `ValidationRule`
-2. 在 `backend/tests/` 中编写配套的 positive + negative 单元测试
-3. 更新 PRD §4.3.2-3D 的规则清单
-
-### 如何添加新的数控系统后处理模板？
-
-1. 在 `backend/app/services/post_processor.py` 中添加新的模板配置
-2. 更新 `docs/PRD.md` 的机床档案表（§4.3.2-3C）
-
 ### 如何切换 AI Provider？
 
 修改 `.env` 中的 `AI_PROVIDER` 变量：
 - `deepseek` — DeepSeek API（默认）
 - `local` — 本地 ollama/Qwen
+
+### 领域知识参考
+
+- G 代码校验规则开发流程 → `.claude/skills/cnc-gcode-rules.md`
+- 新增 API 端点标准流程 → `.claude/skills/api-development.md`
+- 后处理模板开发 → `backend/app/services/post_processor.py`
+- 安全校验引擎架构 → `backend/app/services/gcode_engine.py`
