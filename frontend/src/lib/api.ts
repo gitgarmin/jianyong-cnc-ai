@@ -17,8 +17,8 @@ async function request<T>(url: string, options: RequestInit): Promise<T> {
   return envelope.data;
 }
 
-export const sendChatMessage = async (message: string) => {
-  return request(`${BASE_URL}/chat/send`, {
+export const sendChatMessage = async (message: string): Promise<{ reply: string }> => {
+  return request<{ reply: string }>(`${BASE_URL}/chat/send`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message }),
