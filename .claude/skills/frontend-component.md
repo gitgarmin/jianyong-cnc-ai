@@ -7,11 +7,12 @@ description: React 组件开发流程，创建或修改 MUI 组件时使用
 
 ## When to Activate
 
-- 创建新的 React 组件
-- 修改现有组件的布局或交互
-- 编辑 `frontend/src/components/` 目录下的文件
-- 需要添加新的 Zustand Store 或修改现有 Store
-- 讨论 UI 布局、响应式设计、MUI 组件选择
+仅在以下路径相关场景激活，其他目录下不加载：
+
+- 当前编辑的文件在 `frontend/src/components/` 目录下
+- 当前编辑的文件在 `frontend/src/stores/` 目录下
+- 当前编辑的文件在 `frontend/src/styles/` 目录下
+- 用户主动要求创建或修改 React 组件
 
 ## 组件创建流程
 

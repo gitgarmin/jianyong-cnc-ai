@@ -7,10 +7,12 @@ description: FastAPI 端点开发标准流程，添加新 API 端点或新业务
 
 ## When to Activate
 
+仅在以下路径相关场景激活，其他目录下不加载：
+
 - 用户要求添加新 API 端点或新业务域
-- 编辑 `backend/app/api/` 目录下的路由文件
-- 编辑 `backend/app/schemas/` 目录下的 Schema 文件
-- 需要在 `backend/app/main.py` 注册新路由
+- 当前编辑的文件在 `backend/app/api/` 目录下
+- 当前编辑的文件在 `backend/app/schemas/` 目录下
+- 当前编辑的文件是 `backend/app/main.py`（注册新路由）
 
 ## 前置条件
 

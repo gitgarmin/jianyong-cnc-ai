@@ -7,11 +7,12 @@ description: 部署和环境配置流程，Docker 构建、环境变量配置、
 
 ## When to Activate
 
-- 修改 `docker-compose.yml` 或 `backend/Dockerfile`
-- 配置或修改 `.env` 环境变量
-- 执行数据库迁移（alembic）
-- 准备部署或构建 Docker 镜像
-- 讨论生产环境配置、性能优化
+仅在以下路径相关场景激活，其他目录下不加载：
+
+- 当前编辑的文件是 `docker-compose.yml`
+- 当前编辑的文件在 `backend/` 且文件名包含 `Dockerfile` 或 `alembic`
+- 当前编辑的文件是 `.env` 或 `.env.example`
+- 用户主动要求部署、构建 Docker 镜像或配置环境
 
 ## 环境变量清单
 

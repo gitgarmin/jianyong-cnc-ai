@@ -47,6 +47,22 @@
 
 不要默默跳过错误继续执行，也不要自己擅自修改 Skill。
 
+## 配置审查
+
+每 3-6 个月或大模型发布后，审查以下内容是否仍然必要：
+
+| 审查对象 | 检查项 |
+|---------|--------|
+| Skills | 是否有 Skill 已被新模型能力替代 |
+| Hooks | 是否有 Hook 已不需要（如模型原生支持了某功能） |
+| CLAUDE.md 规则 | 是否有规则限制了新模型的能力 |
+| .ignore | 排除范围是否合理 |
+
+## 工作范围
+
+当任务明确属于某个子目录时，从该子目录开始工作，而非仓库根目录。
+Claude 会自动向上遍历加载沿途的 CLAUDE.md，根级上下文不会丢失。
+
 ---
 
 ## AI 编码行为准则
@@ -112,56 +128,15 @@
 
 ## 快速开始
 
-### 环境准备
-
-- Node.js ≥ 20
-- Python ≥ 3.11
-- Docker Desktop（用于 MySQL）
-
-### 一键启动
-
-```bash
-# 1. 安装前后端依赖
-cd frontend && npm install
-cd ../backend && pip install -r requirements.txt
-
-# 2. 启动 MySQL（Docker）
-docker compose up -d mysql
-
-# 3. 复制环境变量
-cp .env.example .env
-# 编辑 .env 填入 DeepSeek API Key
-
-# 4. 启动后端（http://localhost:8000/docs）
-cd backend && uvicorn app.main:app --reload --port 8000
-
-# 5. 启动前端（http://localhost:5173）
-cd frontend && npm run dev
-```
-
-### Docker Compose 全栈启动
-
-```bash
-cp .env.example .env
-docker compose up -d
-```
+- Node.js ≥ 20，Python ≥ 3.11，Docker Desktop
+- `cp .env.example .env` 后填入 DeepSeek API Key
+- 详细启动命令 → `.claude/skills/deployment.md`
 
 ---
 
-## 目录结构
+## 代码地图
 
-详见 [`CODE_MAP.md`](CODE_MAP.md)（每个模块一行的快速参考）。
-
-顶层结构：
-```
-jianyong-cnc-ai/
-├── frontend/          # React + Vite + MUI（详见 frontend/CLAUDE.md）
-├── backend/           # FastAPI + SQLAlchemy（详见 backend/CLAUDE.md）
-├── docs/              # PRD、架构、API 设计、进度
-├── .claude/           # settings.json、skills/
-├── CODE_MAP.md        # 模块级代码地图
-└── CLAUDE.md          # 本文档
-```
+详见 [`CODE_MAP.md`](CODE_MAP.md)。
 
 ---
 
@@ -195,14 +170,14 @@ test: 补充安全校验引擎单元测试
 
 ## PRD 关键索引
 
+详见 [`docs/PRD.md`](docs/PRD.md)。关键章节：
+
 | 内容 | 位置 |
 |------|------|
-| 产品定义与用户故事 | `docs/PRD.md` §1-3 |
-| 核心功能详解 | `docs/PRD.md` §4 |
-| 安全体系（四层防线） | `docs/PRD.md` §6 |
-| 技术约束与决策 | `docs/PRD.md` §7 |
-| 竞品分析 | `docs/PRD.md` §11 |
-| 页面交互说明 | `docs/PRD.md` §14 |
+| 核心功能详解 | §4 |
+| 安全体系（四层防线） | §6 |
+| 技术约束与决策 | §7 |
+| 页面交互说明 | §14 |
 
 ---
 
@@ -239,3 +214,17 @@ test: 补充安全校验引擎单元测试
 - 新增 API 端点标准流程 → `.claude/skills/api-development.md`
 - 后处理模板开发 → `backend/app/services/post_processor.py`
 - 安全校验引擎架构 → `backend/app/services/gcode_engine.py`
+
+---
+
+## 配置所有权
+
+本项目 Claude Code 配置的所有权：
+
+| 配置 | 文件 | 负责人 |
+|------|------|--------|
+| 全局规则 | `CLAUDE.md` | 项目负责人 |
+| 后端配置 | `backend/CLAUDE.md` | 后端开发 |
+| 前端配置 | `frontend/CLAUDE.md` | 前端开发 |
+| Skills | `.claude/skills/` | 项目负责人 |
+| Hooks | `.claude/settings.json` | 项目负责人 |
