@@ -36,10 +36,17 @@ fi
 # 大小保护：超过 MAX_ENTRIES 条时裁剪旧条目，保留头部 + 最近条目
 ENTRY_COUNT=$(grep -c '^## ' "$EXP_FILE" 2>/dev/null || echo 0)
 if [ "$ENTRY_COUNT" -gt "$MAX_ENTRIES" ]; then
-  HEADER=$(sed -n '1,/^## /{ /^## /!p; }' "$EXP_FILE")
-  BODY=$(grep -A 1000 '^## ' "$EXP_FILE" | tail -n +"$(( (ENTRY_COUNT - MAX_ENTRIES) * 8 + 1 ))")
-  {
-    echo "$HEADER"
-    echo "$BODY"
-  } > "$EXP_FILE"
+  DELETE_COUNT=$((ENTRY_COUNT - MAX_ENTRIES))
+  # 找到第 DELETE_COUNT+1 个 ## 标记的行号（从此处开始保留）
+  CUT_LINE=$(awk '/^## / { count++; if (count == '"$((DELETE_COUNT + 1))"') { print NR; exit } }' "$EXP_FILE")
+  if [ -n "$CUT_LINE" ]; then
+    # 头部：第一个 ## 之前的所有行（标题、说明等）
+    FIRST_ENTRY_LINE=$(awk '/^## / { print NR; exit }' "$EXP_FILE")
+    HEADER_END=$((FIRST_ENTRY_LINE - 1))
+    {
+      head -n "$HEADER_END" "$EXP_FILE"
+      tail -n +"$CUT_LINE" "$EXP_FILE"
+    } > "$EXP_FILE.tmp"
+    mv "$EXP_FILE.tmp" "$EXP_FILE"
+  fi
 fi

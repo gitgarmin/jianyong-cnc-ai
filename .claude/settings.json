@@ -73,6 +73,15 @@
 
     "Stop": [
       {
+        "// PURPOSE": "会话结束时记录变更摘要到经验文件",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/record-experience.sh"
+          }
+        ]
+      },
+      {
         "// PURPOSE": "会话结束时触发反思，在上下文还新鲜时评估配置是否需要更新",
         "hooks": [
           {

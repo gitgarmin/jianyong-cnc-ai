@@ -22,17 +22,9 @@ app/
   services/     # 业务逻辑（每个能力一个文件）
 ```
 
-## 添加新 API 端点（5 步）
+## 添加新 API 端点
 
-1. 在 `app/schemas/{{domain}}.py` 定义 Pydantic Schema
-2. 在 `app/api/{{domain}}.py` 创建或扩展 Router
-3. 在 `app/main.py` 注册路由：
-   ```python
-   from app.api import {{domain}}
-   app.include_router({{domain}}.router, prefix="/api/{{domain}}", tags=["{{TAG}}"])
-   ```
-4. 业务逻辑非平凡时，在 `app/services/` 添加 Service 类
-5. 在 `backend/tests/test_{{domain}}.py` 编写测试
+完整流程见 Skill：`.claude/skills/api-development.md`（Schema → Router → 注册 → Service → 测试 → 文档）。
 
 ## 添加新 ORM 模型（6 步）
 
@@ -45,16 +37,7 @@ app/
 
 ## API 响应规范
 
-所有端点返回统一信封格式：
-
-```json
-{
-  "success": true,
-  "data": {},
-  "error": null,
-  "metadata": { "total": 100, "page": 1, "limit": 20 }
-}
-```
+所有端点返回统一信封格式 `{ success, data, error, metadata }`。详见 `.claude/skills/api-development.md`。
 
 ## 运行和测试
 

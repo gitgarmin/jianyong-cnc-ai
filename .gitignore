@@ -43,3 +43,4 @@ backend/alembic/versions/*.pyc
 # Logs
 *.log
 logs/
+.claude/experience.md
