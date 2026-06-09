@@ -1,0 +1,112 @@
+{
+  "// PROJECT": "简用 数控AI大师 — Claude Code 项目配置",
+  "// SEE": "https://docs.anthropic.com/en/docs/claude-code/settings",
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "// PURPOSE": "编辑前端 .ts/.tsx 文件后自动运行 ESLint 修复",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; case \"$FILE\" in frontend/*.ts|frontend/*.tsx) cd frontend && npx eslint --fix --no-warn-ignored \"$FILE\" 2>/dev/null || true ;; esac"
+          }
+        ]
+      },
+      {
+        "// PURPOSE": "编辑后端 .py 文件后自动运行 ruff 检查和格式化",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; case \"$FILE\" in backend/*.py) cd backend && python -m ruff check --fix \"$FILE\" 2>/dev/null; python -m ruff format \"$FILE\" 2>/dev/null || true ;; esac"
+          }
+        ]
+      },
+      {
+        "// PURPOSE": "后端 API/Model/Schema 或前端组件文件变更后提醒检查文档",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; case \"$FILE\" in backend/app/api/*.py|backend/app/models/*.py|backend/app/schemas/*.py) echo '[DOC_CHECK] 后端 API/Model/Schema 文件已变更。检查：docs/api-design.md（新增/修改端点时）、CODE_MAP.md（新增模块时）、docs/progress.md（模块状态变化时）' ;; frontend/src/components/*.tsx|frontend/src/components/**/*.tsx) echo '[DOC_CHECK] 前端组件文件已变更。检查：CODE_MAP.md（新增组件时）、docs/progress.md（模块状态变化时）' ;; esac"
+          }
+        ]
+      },
+      {
+        "// PURPOSE": "配置文件变更时触发反思提醒，Claude 自评改动是否合理",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; case \"$FILE\" in .claude/skills/*.md|.claude/settings.json|CLAUDE.md|*/CLAUDE.md) echo '[REFLECT] 配置文件已变更。自问：(1) 这次改动是否解决了实际问题？(2) 是否有其他规则/Skill 需要同步更新？(3) 是否引入了新的不一致？' ;; esac"
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "// PURPOSE": "读取超过 500 行的文件时发出警告，建议分段读取",
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; if [ -f \"$FILE\" ]; then LINES=$(wc -l < \"$FILE\"); if [ \"$LINES\" -gt 500 ]; then echo \"WARNING: $FILE has $LINES lines. Use offset/limit parameters to read specific sections and stay within context budget.\"; fi; fi"
+          }
+        ]
+      }
+    ],
+
+    "Start": [
+      {
+        "// PURPOSE": "会话开始时输出动态上下文（分支、最近提交、未提交变更）",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+
+    "Stop": [
+      {
+        "// PURPOSE": "会话结束时记录变更摘要到经验文件",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/record-experience.sh"
+          }
+        ]
+      },
+      {
+        "// PURPOSE": "会话结束时触发反思，在上下文还新鲜时评估配置是否需要更新",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/session-stop.sh"
+          }
+        ]
+      }
+    ]
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(cd backend && python -m pytest*)",
+      "Bash(cd frontend && npm test*)",
+      "Bash(cd frontend && npm run lint*)",
+      "Bash(cd frontend && npm run build*)",
+      "Bash(cd backend && python -m ruff*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)"
+    ]
+  },
+
+  "// MCP_STATUS": "MVP Phase 0 暂不需要。待以下场景时重新评估：(1) 共享向量库替代进程内 ChromaDB (2) 接入内部 Issue Tracker (3) 生产监控告警",
+  "// SUBAGENT_NOTE": "Claude Code 默认已支持 Subagent。PreToolUse 的大文件警告提供了足够的护栏。代码库超过 50 个源文件时考虑在 .claude/agents/ 添加专用 agent。"
+}

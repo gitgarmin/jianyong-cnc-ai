@@ -1,20 +1,34 @@
 const BASE_URL = 'http://localhost:8000/api';
 
-export const sendChatMessage = async (message: string) => {
-  const res = await fetch(`${BASE_URL}/chat/send`, {
+interface ApiResponse<T = unknown> {
+  success: boolean;
+  data: T;
+  error: string | null;
+  metadata: Record<string, unknown> | null;
+}
+
+async function request<T>(url: string, options: RequestInit): Promise<T> {
+  const res = await fetch(url, options);
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+  const envelope: ApiResponse<T> = await res.json();
+  if (!envelope.success) throw new Error(envelope.error ?? '请求失败');
+
+  return envelope.data;
+}
+
+export const sendChatMessage = async (message: string): Promise<{ reply: string }> => {
+  return request<{ reply: string }>(`${BASE_URL}/chat/send`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message }),
   });
-  if (!res.ok) throw new Error('Network response was not ok');
-  return res.json();
 };
 
-export const saveJobRecord = async (record: any) => {
-  const res = await fetch(`${BASE_URL}/records/save`, {
+export const saveJobRecord = async (record: Record<string, unknown>) => {
+  return request(`${BASE_URL}/records/save`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
-  return res.json();
 };

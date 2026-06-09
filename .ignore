@@ -1,0 +1,72 @@
+# {{PROJECT_NAME}} — .ignore
+# Controls which files Claude Code skips during context gathering.
+# Customize per project; these patterns cover typical Fullstack Python+JS repos.
+
+# === Dependencies ===
+node_modules/
+.pnp
+.pnp.js
+bower_components/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.eggs/
+*.egg
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# === Build output ===
+dist/
+build/
+*.tsbuildinfo
+.coverage
+htmlcov/
+
+# === Database files ===
+*.db
+*.sqlite
+*.sqlite3
+
+# === Uploads & binary assets ===
+uploads/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# === Environment & secrets ===
+.env
+.env.local
+.env.*.local
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+*.log
+logs/
+
+# === Large docs (reference only, not for code context) ===
+docs/PRD/
+docs/PRD.md
+
+# === Alembic migration noise ===
+alembic/versions/*.py
