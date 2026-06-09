@@ -65,12 +65,6 @@ Claude 会自动向上遍历加载沿途的 CLAUDE.md，根级上下文不会丢
 
 ---
 
-## AI 编码行为准则
-
-> Karpathy 4 原则已配置为全局规则（`~/.claude/CLAUDE.md`），所有项目生效，此处不再重复。
-
----
-
 ## 快速开始
 
 - Node.js ≥ 20，Python ≥ 3.11，Docker Desktop
